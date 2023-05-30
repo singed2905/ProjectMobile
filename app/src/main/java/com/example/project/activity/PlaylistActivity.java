@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -24,6 +25,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.project.R;
 import com.example.project.service.ProcessBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.squareup.picasso.Picasso;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,8 +43,13 @@ public class PlaylistActivity extends AppCompatActivity {
     private Intent serviceIntent;
     private SeekBar processBar;
     private TextView endTime;
+    private TextView nameAstist;
+    private TextView titleSong;
+    private TextView titleTopSong;
+    private ImageView imgView ;
     private TextView runTime;
-    boolean check = false;
+    private String idSong;
+    boolean check = true;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -95,14 +102,19 @@ public class PlaylistActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
+        serviceIntent = new Intent(this, ProcessBar.class);
+        stopService(serviceIntent);
         this.init();
         this.setImgProcessBar();
         this.addEventBtnBack();
+
         this.addEventPlay();
         this.addEventReplay();
         this.addEventSeekBar();
         this.registerBroadcastReceiver();
     }
+
+
 
     public void registerBroadcastReceiver() {
         IntentFilter filter = new IntentFilter();
@@ -144,18 +156,18 @@ public class PlaylistActivity extends AppCompatActivity {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!check) {
+                if (check) {
                     btnPlay.setImageResource(R.drawable.baseline_pause_24);
-                    check = true;
+                    check = false;
                 } else {
                     btnPlay.setImageResource(R.drawable.baseline_play_arrow_24);
-                    check = false;
+                    check = true;
                 }
-                if (notificationManager == null) {
-                    createNotification();
-                }
-                serviceIntent = new Intent(getApplicationContext(), ProcessBar.class);
+//                if (notificationManager == null) {
+//                    createNotification();
+//                }
                 startService(serviceIntent);
+
             }
         });
     }
@@ -169,6 +181,7 @@ public class PlaylistActivity extends AppCompatActivity {
                     getApplicationContext().stopService(serviceIntent);
                     serviceIntent = new Intent(getApplicationContext(), ProcessBar.class);
                     startService(serviceIntent);
+
                 }
             }
         });
@@ -185,6 +198,7 @@ public class PlaylistActivity extends AppCompatActivity {
     }
 
     public void init() {
+        imgView = findViewById(R.id.imageView);
         btn_back = this.findViewById(R.id.fab);
         btnPlay = findViewById(R.id.play);
         btnPause = findViewById(R.id.previous);
@@ -192,6 +206,17 @@ public class PlaylistActivity extends AppCompatActivity {
         runTime = findViewById(R.id.run_time);
         endTime = findViewById(R.id.time_end);
         btnReplay = findViewById(R.id.replay);
+        nameAstist = findViewById(R.id.nameAstist);
+        titleSong= findViewById(R.id.name);
+        titleTopSong = findViewById(R.id.textView2);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            idSong = extras.getString("id");
+            nameAstist.setText(extras.getString("nameAstist"));
+            titleTopSong.setText(extras.getString("title"));
+            titleSong.setText(extras.getString("title"));
+            Picasso.get().load(extras.getString("img")).into(imgView);
+        }
 
     }
 
