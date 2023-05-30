@@ -43,7 +43,6 @@ public class  ProcessBar extends Service {
         try {
             mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(url));
             mediaPlayer.prepare();
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
