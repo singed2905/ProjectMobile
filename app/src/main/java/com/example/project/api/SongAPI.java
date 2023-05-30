@@ -37,7 +37,7 @@ public class SongAPI{
     private static ArrayList<Subject> rs = new ArrayList<>();
 
 
-    private static final String API_URL = "  https://6e2b-2402-800-63a6-f45c-6c5e-ea77-c06e-bc22.ngrok-free.app/api";
+    private static final String API_URL = "https://backend-clone-zing-mp3.vercel.app/api";
 
     private static final OkHttpClient client = new OkHttpClient().newBuilder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -124,17 +124,8 @@ public class SongAPI{
                                 banners.add(arrBanner.getJSONObject(j).getString("banner"));
 
                             }
-                            System.out.println(arrBanner.length() + "THanh phan");
                         }else{
-                            if(tmp.getString("sectionType").contains("new-release")){
-                                JSONObject arr = tmp.getJSONObject("items");
-                                JSONArray allSong = arr.getJSONArray("all");
 
-                                for (int j = 0; j <allSong.length(); j++) {
-                                    banners.add(allSong.getJSONObject(j).getString("banner"));
-
-                                }
-                            }
                         }
                     }
                     callback.init(banners);
