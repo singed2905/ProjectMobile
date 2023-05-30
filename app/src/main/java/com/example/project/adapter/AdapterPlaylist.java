@@ -9,14 +9,14 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.project.event.OnClickListener;
 import com.example.project.R;
+import com.example.project.event.OnClickListener;
 import com.example.project.model.Subject;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class AdapterFavourites extends RecyclerView.Adapter<AdapterFavourites.ViewHolder> {
+public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.ViewHolder> {
     private List<Subject> mData;
     private OnClickListener onClick;
 
@@ -30,7 +30,7 @@ public class AdapterFavourites extends RecyclerView.Adapter<AdapterFavourites.Vi
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // inflate layout and create ViewHolder
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_home_item_favourites, parent, false);
+                .inflate(R.layout.fragment_item_playlist, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }

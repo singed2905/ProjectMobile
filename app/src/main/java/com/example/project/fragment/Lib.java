@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Lib#newInstance} factory method to
+ * Use the {@link Lib#} factory method to
  * create an instance of this fragment.
  */
 public class Lib extends Fragment implements OnClickListener {
@@ -87,5 +87,17 @@ public class Lib extends Fragment implements OnClickListener {
         Intent intent = new Intent(getActivity(), PlaylistActivity.class);
         startActivity(intent);
         Toast.makeText(this.getContext(), "clickITem", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setData(ArrayList<Subject> arr) {
+
+    }
+
+
+
+    @Override
+    public void playSong(Subject id) {
+
     }
 }
