@@ -5,7 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 
@@ -15,11 +17,14 @@ import com.example.project.R;
 
 import java.io.IOException;
 
-public class ProcessBar extends Service {
+public class  ProcessBar extends Service {
     MediaPlayer mediaPlayer;
     public static final String ACTION_CHANGE_PROGRESS="ACTION_CHANGE_PROGRESS";
     private static Handler handler;
-
+    private static String url = "";
+    public static void setURL(String linkStream){
+        url = linkStream;
+    }
     public ProcessBar() {
     }
 
@@ -32,20 +37,17 @@ public class ProcessBar extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            mediaPlayer.setDataSource("https://vnso-zn-16-tf-mp3-s1-zmp3.zmdcdn.me/07c2b89b7adb9385caca/8837313368341434685?authen=exp=1684573669~acl=/07c2b89b7adb9385caca/*~hmac=88533e22b57dc159b923fd387434040d&fs=MTY4NDQwMDg2OTmUsIC4NHx3ZWJWNnwwfDE0LjE2OS41MS45Nw");
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mediaPlayer.prepareAsync();
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(url));
+            mediaPlayer.prepare();
+
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to prepare media player");
+            throw new RuntimeException(e);
         }
+
         this.createHandle();
         this.registerBroadcastReceiver();
 
