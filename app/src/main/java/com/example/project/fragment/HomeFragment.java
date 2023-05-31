@@ -15,8 +15,9 @@ import android.widget.SearchView;
 
 import com.example.project.R;
 import com.example.project.api.SongAPI;
-import com.example.project.event.InitHomeContent;
+import com.example.project.event.CallbackAPI;
 import com.example.project.event.OnClickListener;
+import com.example.project.model.Section;
 import com.example.project.model.Subject;
 
 import org.json.JSONException;
@@ -80,15 +81,16 @@ public class HomeFragment extends Fragment implements OnClickListener {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         ContentHomeFragment contentHomeFragment = new ContentHomeFragment();
         Bundle args = new Bundle();
-        SongAPI.getHome(new InitHomeContent() {
+        LoadingFragment loadingFragment = new LoadingFragment();
+        fragmentManager.beginTransaction().replace(R.id.main_home_fragment, loadingFragment).addToBackStack(null).commit();
+
+        SongAPI.getHome(new CallbackAPI() {
             @Override
-            public <T> void init(T rs) {
-                ArrayList<String> array = (ArrayList<String> ) rs;
-                System.out.println(array.size() + "Sdsdsd");
-                args.putSerializable("banner", array);
+            public <T> void callback(T rs) {
+                ArrayList<Section> sections = (ArrayList<Section>) rs;
+                args.putSerializable("sections", sections);
                 contentHomeFragment.setArguments(args);
                 fragmentManager.beginTransaction().replace(R.id.main_home_fragment, contentHomeFragment).addToBackStack(null).commit();
-
             }
         });
         }

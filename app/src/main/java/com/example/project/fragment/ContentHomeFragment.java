@@ -1,9 +1,12 @@
 package com.example.project.fragment;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -11,26 +14,38 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.project.R;
-import com.example.project.adapter.AdapterFavourites;
+import com.example.project.activity.PlaylistActivity;
 import com.example.project.adapter.AdapterListSound;
 import com.example.project.adapter.AdapterPlaylist;
 import com.example.project.adapter.AdapterPlaylistStyle2;
 import com.example.project.adapter.BannerAdapter;
 import com.example.project.api.SongAPI;
-import com.example.project.event.InitHomeContent;
+import com.example.project.event.CallbackAPI;
+import com.example.project.event.EventOpenPlaylist;
+import com.example.project.event.OnClickListener;
+import com.example.project.model.Playlist;
+import com.example.project.model.Section;
+import com.example.project.model.SectionPlaylist;
+import com.example.project.model.SectionSong;
 import com.example.project.model.Subject;
+import com.example.project.service.ProcessBar;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ContentHomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContentHomeFragment extends Fragment{
+public class ContentHomeFragment extends Fragment implements EventOpenPlaylist{
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,7 +55,7 @@ public class ContentHomeFragment extends Fragment{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private  ArrayList<String> banner;
+    private  ArrayList<Section> sections;
     private View view;
     public ContentHomeFragment() {
         // Required empty public constructor
@@ -72,7 +87,7 @@ public class ContentHomeFragment extends Fragment{
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         Bundle args = getArguments();
-        banner = (ArrayList<String>) args.getSerializable("banner");
+        sections = (ArrayList<Section>) args.getSerializable("sections");
 
     }
 
@@ -80,33 +95,38 @@ public class ContentHomeFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view =inflater.inflate(R.layout.fragment_content_home, container, false);
+        LinearLayout layoutManager = view.findViewById(R.id.main_home);
+        layoutManager.setBackground(ContextCompat.getDrawable(getContext(),R.drawable.angryimg));
+        Stack<FragmentPlaylist> stack = new Stack<>();
+        stack.add(new FragmentPlaylist( R.id.homeListPlaylist,R.id.title_playlist1,0));
+        stack.add(new FragmentPlaylist( R.id.homeListPlaylist2,R.id.title_playlist2,0));
+        stack.add(new FragmentPlaylist( R.id.homeListPlaylist3,R.id.title_playlist3,1));
+        stack.add(new FragmentPlaylist( R.id.homeListPlaylist4,R.id.title_playlist4,0));
 
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            if(section.getSectionType().equals("banner")){
+                SectionPlaylist sp = (SectionPlaylist)section;;
 
-        // Inflate the layout for this fragment
-
-//        SliderImage sliderImage = view.findViewById(R.id.sliderBaner);
-        ArrayList<String> images = new ArrayList<>();
-        images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
-        images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
-        images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
-        images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
-        images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
-        initBanner(banner);
-//        ArrayList<Subject> subjects = initListMusic();
-//
-//        initSongNews(subjects);
-//        initPlaylist(subjects, R.id.homeListPlaylist,R.id.title_playlist1,  "Thịnh hành");
-//        initPlaylist(subjects, R.id.homeListPlaylist2,R.id.title_playlist2, "Chill");
-//        initPlaylist(subjects, R.id.homeListPlaylist3, R.id.title_playlist3,"Top 100");
-//        initPlaylistStyle2(subjects, R.id.homeListPlaylist4,R.id.title_playlist4 ,"VPOP");
-
-
-
-
-
-
-
-
+                System.out.println(sp.getTitle());
+                initBanner(((SectionPlaylist) section).getPlaylists());
+            }
+            if(section.getSectionType().equals("new-release")){
+                ArrayList<Subject> subjects =  ((SectionSong) section).getSubjects();
+                initSongNews(subjects);
+            }
+            if(section.getSectionType().equals("playlist")){
+                if(!stack.empty()){
+                    FragmentPlaylist fragmentPlaylist = stack.pop();
+                    ArrayList<Playlist> playlists =  ((SectionPlaylist) section).getPlaylists();
+                    if(fragmentPlaylist.getStyle() == 0){
+                        initPlaylist(playlists, fragmentPlaylist.getIdRec(),fragmentPlaylist.getIdTitle(),  section.getTitle());
+                    }else{
+                        initPlaylistStyle2(playlists, fragmentPlaylist.getIdRec(),fragmentPlaylist.getIdTitle(),  section.getTitle());
+                    }
+                }
+            }
+        }
         return view;
     }
     public void initSongNews(ArrayList<Subject> subjects){
@@ -114,47 +134,114 @@ public class ContentHomeFragment extends Fragment{
         RecyclerView songsNews = view.findViewById(R.id.newSongs);
         songsNews.setLayoutManager(linearLayout);
         AdapterListSound recently2 = new AdapterListSound();
-        recently2.setData(subjects, null);
+        recently2.setData(subjects, new OnClickListener() {
+            @Override
+            public void clickItem() {
+
+            }
+
+            @Override
+            public void setData(ArrayList<Subject> arr) {
+
+            }
+
+            @Override
+            public void playSong(Subject subject) throws JSONException, IOException {
+                ProcessBar.setURL(subject.getUrl());
+                Intent intent = new Intent(getActivity(), PlaylistActivity.class);
+                intent.putExtra("id", subject.getId());
+                intent.putExtra("nameAstist", subject.getArtist());
+                intent.putExtra("title", subject.getName());
+                intent.putExtra("img", subject.getSrc());
+                startActivity(intent);
+            }
+        });
         songsNews.setAdapter(recently2);
     }
-    public void initPlaylist(ArrayList<Subject> subjects, int id,int id_title, String title){
+    public void initPlaylist(ArrayList<Playlist> playlists, int id,int id_title, String title){
         RecyclerView homeFavourites = view.findViewById(id);
         TextView t = view.findViewById(id_title);
         t.setText(title);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         homeFavourites.setLayoutManager(layoutManager);
         AdapterPlaylist recently = new AdapterPlaylist();
-        recently.setData(subjects, null);
+        recently.setData(playlists, this);
         homeFavourites.setAdapter(recently);
     }
-    public void initPlaylistStyle2(ArrayList<Subject> subjects, int id,int id_title, String title){
+    public void initPlaylistStyle2(ArrayList<Playlist> playlists, int id,int id_title, String title){
         RecyclerView homeFavourites = view.findViewById(id);
         TextView t = view.findViewById(id_title);
         t.setText(title);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         homeFavourites.setLayoutManager(layoutManager);
         AdapterPlaylistStyle2 recently = new AdapterPlaylistStyle2();
-        recently.setData(subjects, null);
+        recently.setData(playlists, this);
         homeFavourites.setAdapter(recently);
     }
-    public void initBanner(ArrayList<String> images){
+    public void initBanner(ArrayList<Playlist> playlists){
+
         ViewPager viewPager;
         viewPager = (ViewPager) view.findViewById(R.id.viewPager);
-        BannerAdapter viewPagerAdapter = new BannerAdapter(view.getContext(), images);
+        BannerAdapter viewPagerAdapter = new BannerAdapter(view.getContext(), playlists);
+        viewPagerAdapter.setEvent(this);
         viewPager.setAdapter(viewPagerAdapter);
     }
-    public ArrayList<Subject> initListMusic() {
-        //get list
-        ArrayList<Subject> listMusic = new ArrayList<>();
-        listMusic.add(new Subject("dsds","Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU", "sdsd"));
-        listMusic.add(new Subject("dsds","Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU", "sdsd"));
-        listMusic.add(new Subject("dsds","Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU", "sdsd"));
-        listMusic.add(new Subject("dsds","Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU", "sdsd"));
-        listMusic.add(new Subject("dsds","Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU", "sdsd"));
-        listMusic.add(new Subject("dsds","Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU", "sdsd"));
-        listMusic.add(new Subject("dsds","Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU", "sdsd"));
-        listMusic.add(new Subject("dsds","Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU", "sdsd"));
 
-        return listMusic;
+    class FragmentPlaylist{
+        private int idRec;
+        private int idTitle;
+        private int style;
+
+        public FragmentPlaylist(int idRec, int idTitle, int style) {
+            this.idRec = idRec;
+            this.idTitle = idTitle;
+            this.style= style;
+        }
+
+        public int getStyle() {
+            return style;
+        }
+
+        public void setStyle(int style) {
+            this.style = style;
+        }
+
+        public int getIdRec() {
+            return idRec;
+        }
+
+        public void setIdRec(int idRec) {
+            this.idRec = idRec;
+        }
+
+        public int getIdTitle() {
+            return idTitle;
+        }
+
+        public void setIdTitle(int idTitle) {
+            this.idTitle = idTitle;
+        }
+    }
+    @Override
+    public void openPlaylist(Playlist playlist) {
+        System.out.println(playlist.getId());
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        LoadingFragment loadingFragment = new LoadingFragment();
+        fragmentManager.beginTransaction().replace(R.id.main_home_fragment, loadingFragment).addToBackStack(null).commit();
+        SongAPI.getSongsByIdPlaylist(playlist.getId(), new CallbackAPI() {
+            @Override
+            public <T> void callback(T data) {
+                ArrayList<Subject> subjects  = (ArrayList<Subject>) data;
+                playlist.setSubjects(subjects);
+                System.out.println(playlist.getSubjects().size());
+                PlaylistFragment playlistFragment = new PlaylistFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("playlist", playlist);
+                playlistFragment.setArguments(args);
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.main_home_fragment, playlistFragment).addToBackStack(null).commit();
+
+            }
+        });
     }
 }

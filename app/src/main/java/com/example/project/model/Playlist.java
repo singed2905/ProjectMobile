@@ -1,22 +1,48 @@
 package com.example.project.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Playlist {
+public class Playlist implements Serializable {
     private String id;
     private String name;
+    private String img;
+    private String description;
+
     private ArrayList<Subject> subjects;
 
-    public Playlist(String id, String name, ArrayList<Subject> subjects) {
+    public Playlist(String id, String name,String img, ArrayList<Subject> subjects) {
         this.id = id;
         this.name = name;
         this.subjects = subjects;
+        this.img = img;
     }
 
-    public Playlist(String id, String name) {
+    public Playlist() {
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Playlist(String id, String name, String img) {
         this.id = id;
         this.name = name;
         subjects = new ArrayList<>();
+        this.img = img;
+
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 
     public String getId() {

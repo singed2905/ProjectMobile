@@ -10,18 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.project.R;
-import com.example.project.activity.MainActivity;
 import com.example.project.activity.PlaylistActivity;
-import com.example.project.adapter.AdapterFavourites;
 import com.example.project.adapter.AdapterListSound;
-import com.example.project.api.SongAPI;
 import com.example.project.event.OnClickListener;
-import com.example.project.event.SetURLStream;
 import com.example.project.model.Subject;
 import com.example.project.service.ProcessBar;
 
