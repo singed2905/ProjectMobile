@@ -1,27 +1,24 @@
 package com.example.project.api;
 
-import android.content.ContentProviderOperation;
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
-
-import androidx.viewpager.widget.ViewPager;
-
-import com.example.project.R;
-import com.example.project.adapter.BannerAdapter;
-import com.example.project.event.InitHomeContent;
+import com.example.project.cache.CacheObject;
+import com.example.project.event.CallbackAPI;
 import com.example.project.event.OnClickListener;
-import com.example.project.event.SetURLStream;
+import com.example.project.cache.CacheMemory;
+import com.example.project.model.Playlist;
+import com.example.project.model.Section;
+import com.example.project.model.SectionPlaylist;
+import com.example.project.model.SectionSong;
 import com.example.project.model.Subject;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -29,7 +26,6 @@ import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class SongAPI{
@@ -48,7 +44,44 @@ public class SongAPI{
     public static void setO(OnClickListener o) {
         SongAPI.o = o;
     }
+    public static ArrayList<Subject> getSongsByIdPlaylist(String id, CallbackAPI callbackAPI) {
+        HttpUrl.Builder httpBuilder = HttpUrl.parse(API_URL+"/get_songs_by_id_playlist").newBuilder();
+        httpBuilder.addQueryParameter("id",id);
+        Request request = new Request.Builder()
+                .url(httpBuilder.build())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                JSONArray songs = null;
+                ArrayList<Subject> subjects = new ArrayList<>();
+                try {
+                    songs = new JSONArray(result);
+                    for (int i = 0; i < songs.length(); i++)
+                    {
+                        String id = songs.getJSONObject(i).getString("id");
+                        String title = songs.getJSONObject(i).getString("title");
+                        String artistsNames = songs.getJSONObject(i).getString("artistsNames");
+                        String img = songs.getJSONObject(i).getString("thumbnailM");
+                        String url = songs.getJSONObject(i).getString("linkStream");
+                        Subject subject = new Subject(id, title, artistsNames, img, url);
+                        subjects.add(subject);
+                    }
+                    callbackAPI.callback(subjects);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        return rs;
+    }
     public static ArrayList<Subject> searchSongByName(String name) throws IOException, JSONException {
         HttpUrl.Builder httpBuilder = HttpUrl.parse(API_URL+"/search").newBuilder();
         httpBuilder.addQueryParameter("name",name);
@@ -89,14 +122,25 @@ public class SongAPI{
 
         return rs;
     }
-    public static void initBanner(ArrayList<String> images, View view){
-        ViewPager viewPager;
-        viewPager = (ViewPager) view.findViewById(R.id.viewPager);
-        BannerAdapter viewPagerAdapter = new BannerAdapter(view.getContext(), images);
-        viewPager.setAdapter(viewPagerAdapter);
-    }
-    public static void getHome(InitHomeContent callback){
-        HttpUrl.Builder httpBuilder = HttpUrl.parse(API_URL+"/").newBuilder();
+
+    public static void getHome(CallbackAPI callback){
+        CacheMemory cacheMemory = CacheMemory.getMemoryCache();
+        String homeCache = cacheMemory.getDataFromCache("home");
+
+        Type type = new TypeToken<ArrayList<CacheObject>>(){}.getType();
+        ArrayList<CacheObject> cacheObjects = new ArrayList<>();
+        ArrayList<Section> sections = new ArrayList<>();
+        if(homeCache != null){
+            cacheObjects = new Gson().fromJson(homeCache,type);
+            for (CacheObject tmp: cacheObjects) {
+                sections.add(tmp.getObject());
+            }
+            callback.callback(sections);
+            return;
+
+        }
+        System.out.println("Call API HOME");
+        HttpUrl.Builder httpBuilder = HttpUrl.parse(API_URL+"/get_playlist_home").newBuilder();
         Request request = new Request.Builder()
                 .url(httpBuilder.build())
                 .build();
@@ -109,26 +153,61 @@ public class SongAPI{
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String result = response.body().string();
+                ArrayList<Section> sections = new ArrayList<>();
+
                 try {
-                    JSONObject res = new JSONObject(result);
-                    JSONObject data = res.getJSONObject("data");
-                    ArrayList<String> banners = new ArrayList<>();
-                    JSONArray items = data.getJSONArray("items");
+                    JSONArray items = new JSONArray(result);
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject tmp = items.getJSONObject(i);
-
-                        if(tmp.getString("sectionType").contains("banner")){
-                            JSONArray arrBanner = tmp.getJSONArray("items");
-
-                            for (int j = 0; j <arrBanner.length(); j++) {
-                                banners.add(arrBanner.getJSONObject(j).getString("banner"));
-
+                        String sectionType = tmp.getString("sectionType");
+                        String title= tmp.getString("title");
+                        if(sectionType.equals("new-release")){
+                            Section section = new SectionSong();
+                            section.setTitle(title);
+                            section.setSectionType(sectionType);
+                            JSONArray arrayItems = tmp.getJSONArray("items");
+                            ArrayList<Subject> arrayListSubject = new ArrayList<>();
+                            for (int j = 0; j < arrayItems.length(); j++) {
+                                Subject subject = new Subject();
+                                subject.setId(arrayItems.getJSONObject(j).getString("id"));
+                                subject.setUrl(arrayItems.getJSONObject(j).getString("linkStream"));
+                                subject.setSrc(arrayItems.getJSONObject(j).getString("thumbnailM"));
+                                subject.setName(arrayItems.getJSONObject(j).getString("title"));
+                                subject.setArtist(arrayItems.getJSONObject(j).getString("artistsNames"));
+                                arrayListSubject.add(subject);
                             }
-                        }else{
+                            ((SectionSong) section).setSubjects(arrayListSubject);
+                            sections.add(section);
+                            continue;
+                        }
+
+                        Section section = new SectionPlaylist();
+                        section.setTitle(title);
+                        section.setSectionType(sectionType);
+
+                        JSONArray arrayItems = tmp.getJSONArray("items");
+                        ArrayList<Playlist> arrayList = new ArrayList<>();
+
+                        for (int j = 0; j < arrayItems.length(); j++) {
+                            Playlist playlist = new Playlist();
+                            playlist.setId(arrayItems.getJSONObject(j).getString("encodeId"));
+                            playlist.setImg(arrayItems.getJSONObject(j).getString("thumbnail"));
+                            playlist.setName(arrayItems.getJSONObject(j).getString("title"));
+                            playlist.setDescription(arrayItems.getJSONObject(j).getString("sortDescription"));
+                            arrayList.add(playlist);
 
                         }
+                        ((SectionPlaylist) section).setPlaylists(arrayList);
+
+                        sections.add(section);
                     }
-                    callback.init(banners);
+                    ArrayList<CacheObject> cacheObjects = new ArrayList<>();
+                    for (Section tmp: sections) {
+                        cacheObjects.add(new CacheObject(tmp));
+                    }
+                    cacheMemory.putDataToCache("home", new Gson().toJson(cacheObjects));
+
+                    callback.callback(sections);
 
                     System.out.println(items.length());
                 } catch (JSONException e) {
