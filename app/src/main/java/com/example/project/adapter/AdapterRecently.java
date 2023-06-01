@@ -12,8 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project.event.OnClickListener;
 import com.example.project.R;
 import com.example.project.model.Subject;
+import com.squareup.picasso.Picasso;
 
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.List;
 
 public class AdapterRecently extends RecyclerView.Adapter<AdapterRecently.ViewHolder> {
@@ -28,7 +32,7 @@ public class AdapterRecently extends RecyclerView.Adapter<AdapterRecently.ViewHo
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // inflate layout and create ViewHolder
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_home_item_recently, parent, false);
+                .inflate(R.layout.fragment_history_recently_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
@@ -38,10 +42,17 @@ public class AdapterRecently extends RecyclerView.Adapter<AdapterRecently.ViewHo
         Subject tmp = mData.get(position);
         holder.nameMusic.setText(tmp.getName());
         holder.nameAstist.setText(tmp.getArtist());
+        Picasso.get().load(tmp.getSrc()).into(holder.avatar);
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onClick.clickItem();
+                try {
+                    onClick.playSong(tmp, mData,holder.getAdapterPosition());
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }

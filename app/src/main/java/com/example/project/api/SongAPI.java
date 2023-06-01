@@ -22,6 +22,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -36,8 +38,7 @@ public class SongAPI{
     private static OnClickListener o;
     private static ArrayList<Subject> rs = new ArrayList<>();
 
-
-    private static final String API_URL = "https://backend-clone-zing-mp3.vercel.app/api";
+    private static final String API_URL = " https://3593-113-162-148-232.ngrok-free.app/api";
 
     private static final OkHttpClient client = new OkHttpClient().newBuilder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -135,9 +136,49 @@ public class SongAPI{
                     throw new RuntimeException(e);
                 }
 
+
             }
         });
     }
+    public static Subject getInfoSong(String id) {
+        final CountDownLatch latch = new CountDownLatch(1); // Khởi tạo CountDownLatch với giá trị ban đầu là 1
+
+        Subject[] subjectWrapper = new Subject[1]; // Sử dụng một mảng để bọc đối tượng Subject
+
+        HttpUrl.Builder httpBuilder = HttpUrl.parse(API_URL + "/get_all_info_song?id=" + id).newBuilder();
+        Request request = new Request.Builder()
+                .url(httpBuilder.build())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+                latch.countDown();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                try {
+                    JSONObject res = new JSONObject(result);
+                    subjectWrapper[0] = new Subject(res.getString("id"), res.getString("title"), res.getString("artistsNames"), res.getString("thumbnailM"), res.getString("linkStream"));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    latch.countDown();
+                }
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        return subjectWrapper[0];
+    }
+
     public static void main(String[] args) throws IOException {
     }
 

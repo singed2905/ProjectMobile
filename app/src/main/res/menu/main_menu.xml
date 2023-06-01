@@ -19,8 +19,8 @@
     <item
         android:id="@+id/lib"
         android:enabled="true"
-        android:icon="@drawable/baseline_library_music_24"
-        android:title="Libraries"
+        android:icon="@drawable/baseline_history_24"
+        android:title="History"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/profile"

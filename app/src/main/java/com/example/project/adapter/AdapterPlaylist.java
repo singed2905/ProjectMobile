@@ -46,7 +46,7 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.ViewHo
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println(121212);
+                System.out.println();
                 onClick.clickItem();
             }
         });

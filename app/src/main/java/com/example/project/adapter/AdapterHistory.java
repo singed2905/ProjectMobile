@@ -1,5 +1,6 @@
 package com.example.project.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +15,18 @@ import com.example.project.R;
 import com.example.project.model.Subject;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.List;
 
-public class AdapterFavourites extends RecyclerView.Adapter<AdapterFavourites.ViewHolder> {
+public class AdapterHistory extends RecyclerView.Adapter<AdapterHistory.ViewHolder> {
     private List<Subject> mData;
     private OnClickListener onClick;
 
 
     public void setData(List<Subject> data, OnClickListener o) {
-        this.onClick=o;
+        this.onClick = o;
         this.mData = data;
     }
 
@@ -30,27 +34,32 @@ public class AdapterFavourites extends RecyclerView.Adapter<AdapterFavourites.Vi
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // inflate layout and create ViewHolder
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_home_item_favourites, parent, false);
+                .inflate(R.layout.fragment_history_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Subject tmp=mData.get(position);
+        Subject tmp = mData.get(position);
         holder.nameMusic.setText(tmp.getName());
         holder.nameAstist.setText(tmp.getArtist());
-        System.out.println(holder.linearLayout);
         Picasso.get().load(tmp.getSrc()).into(holder.avatar);
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println(121212);
-                onClick.clickItem();
+                try {
+                    onClick.playSong(tmp, mData, holder.getAdapterPosition());
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
+
     @Override
     public int getItemCount() {
         return mData.size();

@@ -3,7 +3,6 @@ package com.example.project.fragment;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -14,13 +13,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.project.R;
-import com.example.project.adapter.AdapterFavourites;
 import com.example.project.adapter.AdapterListSound;
 import com.example.project.adapter.AdapterPlaylist;
 import com.example.project.adapter.AdapterPlaylistStyle2;
 import com.example.project.adapter.BannerAdapter;
-import com.example.project.api.SongAPI;
-import com.example.project.event.InitHomeContent;
 import com.example.project.model.Subject;
 
 import java.util.ArrayList;
@@ -80,11 +76,6 @@ public class ContentHomeFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view =inflater.inflate(R.layout.fragment_content_home, container, false);
-
-
-        // Inflate the layout for this fragment
-
-//        SliderImage sliderImage = view.findViewById(R.id.sliderBaner);
         ArrayList<String> images = new ArrayList<>();
         images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
         images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
@@ -92,21 +83,6 @@ public class ContentHomeFragment extends Fragment{
         images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
         images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU");
         initBanner(banner);
-//        ArrayList<Subject> subjects = initListMusic();
-//
-//        initSongNews(subjects);
-//        initPlaylist(subjects, R.id.homeListPlaylist,R.id.title_playlist1,  "Thịnh hành");
-//        initPlaylist(subjects, R.id.homeListPlaylist2,R.id.title_playlist2, "Chill");
-//        initPlaylist(subjects, R.id.homeListPlaylist3, R.id.title_playlist3,"Top 100");
-//        initPlaylistStyle2(subjects, R.id.homeListPlaylist4,R.id.title_playlist4 ,"VPOP");
-
-
-
-
-
-
-
-
         return view;
     }
     public void initSongNews(ArrayList<Subject> subjects){
