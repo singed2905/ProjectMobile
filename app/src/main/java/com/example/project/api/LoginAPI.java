@@ -33,6 +33,7 @@ import okhttp3.Response;
 
 public class LoginAPI {
     private static final String API_URL = "http://192.168.1.78:3008/auth";
+
     private static final OkHttpClient client = new OkHttpClient().newBuilder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -109,6 +110,7 @@ public class LoginAPI {
             }
         });
     }
+
     public static void uploadFile(File fileUriAudio, File fileUriImage, String title, String artist,Context context, CallbackAPI callbackAPI) {
         System.out.println(fileUriAudio + "------"+fileUriImage);
 
@@ -144,6 +146,24 @@ public class LoginAPI {
                 String result = response.body().string();
                 System.out.println(result + "huy");
                 callbackAPI.callback(result);
+    public static void forgotPassword(String username, Context context) {
+        RequestBody requestBody = new FormBody.Builder()
+                .add("username", username)
+                .build();
+        Request request = new Request.Builder()
+                .url(API_URL + "/forgot_password")
+                .post(requestBody)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.fillInStackTrace();
+            }
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String result = response.body().string();
+                Log.e("result", result);
+                UserCache.saveNotifyForgot(context, result);
 
             }
         });

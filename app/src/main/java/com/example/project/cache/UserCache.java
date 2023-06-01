@@ -35,11 +35,15 @@ public class UserCache {
         String username = sharedPreferences.getString("username", "");
         return username;
     }
-
-    public static void clearToken(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("accessToken", Context.MODE_PRIVATE);
+    public static void saveNotifyForgot(Context context, String notify) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("forgot", context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("accessToken"); // Xóa giá trị token từ Shared Preferences với key "accessToken"
-        editor.apply(); // Áp dụng các thay đổi
+        editor.putString("notify", notify);
+        editor.apply();
+    }
+    public static String getNotifyForgot(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("forgot", context.MODE_PRIVATE);
+        String notify = sharedPreferences.getString("notify", "");
+        return notify;
     }
 }
