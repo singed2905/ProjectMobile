@@ -103,9 +103,18 @@ public class PlaylistActivity extends AppCompatActivity {
                 }
             } else {
                 if (intent.getAction().equals(ACTION_PLAY)) {
+                    if (!ProcessBar.check) {
+                        ProcessBar.check = true;
+                        btnPlay.setImageResource(R.drawable.baseline_pause_24);
+                    } else {
+                        ProcessBar.check = false;
+                        btnPlay.setImageResource(R.drawable.baseline_play_arrow_24);
+                    }
                     serviceIntent = new Intent(context, ProcessBar.class);
                     context.startService(serviceIntent);
                 } else {
+                        ProcessBar.check = true;
+                        btnPlay.setImageResource(R.drawable.baseline_pause_24);
                     if (intent.getAction().equals(ACTION_PAUSE)) {
                         serviceIntent = new Intent(context, ProcessBar.class);
                         context.stopService(serviceIntent);
@@ -164,11 +173,9 @@ public class PlaylistActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!ProcessBar.check) {
-            ProcessBar.check = true;
+        if (ProcessBar.check) {
             btnPlay.setImageResource(R.drawable.baseline_pause_24);
         } else {
-            ProcessBar.check = false;
             btnPlay.setImageResource(R.drawable.baseline_play_arrow_24);
         }
     }

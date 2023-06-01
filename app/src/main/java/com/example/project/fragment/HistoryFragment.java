@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -57,7 +58,7 @@ public class HistoryFragment extends Fragment implements OnClickListener {
             throw new RuntimeException(e);
         }
         this.setAdapterRecently();
-        this.setAdapterFavourites();
+        this.setAdapterHistory();
         return view;
     }
     public void init() throws JSONException {
@@ -72,10 +73,11 @@ public class HistoryFragment extends Fragment implements OnClickListener {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         homeRecycler.setLayoutManager(layoutManager);
         AdapterRecently adapterRecently = new AdapterRecently();
-        adapterRecently.setData(listMusic,this);
+        List<Subject> list= listMusic.subList( 0,  7);
+        adapterRecently.setData(list,this);
         homeRecycler.setAdapter(adapterRecently);
     }
-    public void setAdapterFavourites() {
+    public void setAdapterHistory() {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         homeFavourites.setLayoutManager(gridLayoutManager);
         AdapterHistory adapterFavourites = new AdapterHistory();

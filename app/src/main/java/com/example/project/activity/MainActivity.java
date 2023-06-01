@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout miniControl;
     TextView textArtist;
     TextView textName;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,10 +46,8 @@ public class MainActivity extends AppCompatActivity {
         this.checkShowMiniControl();
         this.addEventKillThis();
         this.setTextFMiniControl();
-        System.out.println(982);
-        System.out.println(ProcessBar.check);
         if(PlaylistActivity.serviceIntent!=null){
-            if (!ProcessBar.check) {
+            if (ProcessBar.check) {
                 btnPlay.setImageResource(R.drawable.baseline_pause_24);
             } else {
                 btnPlay.setImageResource(R.drawable.baseline_play_arrow_24);
@@ -130,9 +129,6 @@ public class MainActivity extends AppCompatActivity {
                     ProcessBar.check=false;
                     btnPlay.setImageResource(R.drawable.baseline_play_arrow_24);
                 }
-//                if (notificationManager == null) {
-//                    createNotification();
-//                }
                 startService(serviceIntent);
 
             }
