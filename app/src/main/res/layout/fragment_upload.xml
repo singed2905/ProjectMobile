@@ -4,150 +4,92 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_background"
+
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.UploadFragment">
+    tools:context=".fragment.Register">
 
     <LinearLayout
-        android:id="@+id/container_profile"
+        android:id="@+id/container_register"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="80dp"
+        android:layout_height="match_parent"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         tools:ignore="MissingConstraints">
 
-        <ImageView
-            android:id="@+id/img_user"
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Upload"
+            android:textColor="@color/active"
+            android:textSize="40dp" />
+
+        <Button
+            android:id="@+id/btn_select"
             android:layout_width="match_parent"
-            android:layout_height="117dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+
+            android:text="Select audio">
+        </Button>
+
+        <Button
+            android:id="@+id/btn_select_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="Select image">
+        </Button>
+
+        <EditText
+            android:id="@+id/editText_Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_marginTop="10dp"
-            android:src="@mipmap/ic_launcher">
-
-        </ImageView>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/tv_username"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textColor="@android:color/white"
-                android:gravity="center"
-                >
-
-            </TextView>
-
-
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/btn_select"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Select file to upload">
-            </Button>
-
-        </LinearLayout>
-        <LinearLayout
+            android:ems="10"
+            android:hint="Tên bài hát"
+            android:padding="15dp"
+            android:background="@drawable/custom_edittext"
+            android:layout_marginBottom="20dp"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/baseline_library_music_24"
+            android:textColor="@color/backgr" />
+        <EditText
+            android:id="@+id/editText_Astris"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:ems="10"
+            android:hint="Nghệ sĩ"
+            android:padding="15dp"
+            android:inputType="text"
+            android:background="@drawable/custom_edittext"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/baseline_profile_24"
+            android:textColor="@color/backgr" />
 
-            <TextView
 
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:text="File: ">
-            </TextView>
-            <TextView
-                android:id="@+id/tv_src"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textColor="@android:color/white"
 
-                >
-            </TextView>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btn_upload"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
+            android:layout_marginTop="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="Upload" />
 
-            <TextView
-
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:text="Song: ">
-            </TextView>
-            <EditText
-                android:id="@+id/edt_upsong"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textColor="@android:color/white"
-
-                >
-            </EditText>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
-
-            <TextView
-
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textColor="@android:color/white"
-                android:text="Artist: ">
-            </TextView>
-            <EditText
-                android:id="@+id/edt_upartist"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:textColor="@android:color/white"
-
-                >
-            </EditText>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/btn_up"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="Upload">
-            </Button>
-
-        </LinearLayout>
 
     </LinearLayout>
-
-
-    <!--    </LinearLayout>-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

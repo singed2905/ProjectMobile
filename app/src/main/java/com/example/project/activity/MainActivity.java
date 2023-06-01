@@ -18,9 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.project.R;
+import com.example.project.cache.UserCache;
 import com.example.project.fragment.HomeFragment;
 import com.example.project.fragment.HistoryFragment;
 import com.example.project.fragment.Login;
+import com.example.project.fragment.ProfileFragment;
+import com.example.project.fragment.UploadFragment;
 import com.example.project.service.ProcessBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -73,8 +76,19 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, libFragment).addToBackStack(null).commit();
                         return true;
                     case R.id.profile:
-                        Login loginFragment = new Login();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, loginFragment).addToBackStack(null).commit();
+                        String token = UserCache.getToken(getApplicationContext());
+                        if(token.equals("")){
+                            Login loginFragment = new Login();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container, loginFragment).addToBackStack(null).commit();
+
+                        }else{
+                            ProfileFragment profileFragment = new ProfileFragment();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).addToBackStack(null).commit();
+
+//                            UploadFragment uploadFragment = new UploadFragment();
+//                            getSupportFragmentManager().beginTransaction().replace(R.id.container, uploadFragment).addToBackStack(null).commit();
+
+                        }
                         return true;
                 }
                 return false;
