@@ -36,8 +36,10 @@ public class UserCache {
         return username;
     }
 
-    public static String clearToken(Context context)
-    {
-        return null;
+    public static void clearToken(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("accessToken", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("accessToken"); // Xóa giá trị token từ Shared Preferences với key "accessToken"
+        editor.apply(); // Áp dụng các thay đổi
     }
 }
