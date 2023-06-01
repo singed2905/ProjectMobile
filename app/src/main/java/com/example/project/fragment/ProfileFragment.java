@@ -35,11 +35,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UploadFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class ProfileFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
@@ -192,7 +188,6 @@ public class ProfileFragment extends Fragment {
                                         String name = jsonObject.getString("name");
                                         String artist = jsonObject.getString("artist");
 
-                                        // Thêm dữ liệu vào dataList
 
                                         dataList.add(new Subject(idSong, name, artist));
 
@@ -228,27 +223,18 @@ public class ProfileFragment extends Fragment {
 
         // Hiển thị thông báo đăng xuất thành công
         Toast.makeText(getActivity(), "Đăng xuất thành công.", Toast.LENGTH_SHORT).show();
-
         // Chuyển sang Fragment hoặc
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.main_home_fragment, new HomeFragment());
+        fragmentTransaction.replace(R.id.container, new HomeFragment());
         fragmentTransaction.commit();
     }
 
     private void swap() {
-        UploadFragment ufragment = new UploadFragment();
-
-        // Truy cập FragmentManager từ hoạt động chứa fragment
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-
-        // Bắt đầu giao dịch fragment
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         // Thay thế fragment hiện tại bằng fragment mới
-        fragmentTransaction.replace(R.id.container_profile, ufragment);
-
-        // Hoàn thành giao dịch fragment
+        fragmentTransaction.replace(R.id.container, new UploadFragment()).addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -289,5 +275,6 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 
 }

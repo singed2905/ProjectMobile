@@ -1,8 +1,10 @@
 package com.example.project.fragment;
 
+
 import static android.app.Activity.RESULT_OK;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -10,7 +12,10 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.project.R;
+import com.example.project.api.LoginAPI;
 import com.example.project.cache.UserCache;
+import com.example.project.event.CallbackAPI;
+import com.example.project.model.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,15 +60,15 @@ public class UploadFragment extends Fragment {
     private static final int FILE_REQUEST_CODE = 1;
 
     private Button btnChooseFile;
-    private Button btnUpload;
-    private Button btnBack;
-    private TextView tvUser;
+    private Button btnChooseImg;
 
-    private String selectedFilePath;
-    private OkHttpClient client;
-    private SharedPreferences sharedPreferences;
-    private String accessToken;
-    private UserCache ucache;
+    private Button btnUpload;
+    private View view;
+
+    private Uri selectedFilePath;
+    private Uri selectedFilePathImg;
+    private File fileAudio;
+    private File fileImage;
     public UploadFragment() {
         // Required empty public constructor
     }
@@ -86,140 +94,100 @@ public class UploadFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_upload, container, false);
+        view = inflater.inflate(R.layout.fragment_upload, container, false);
 
         btnChooseFile = view.findViewById(R.id.btn_select);
-        btnUpload = view.findViewById(R.id.btn_up);
-        btnBack = view.findViewById(R.id.btn_back);
-        tvUser = view.findViewById(R.id.tv_username);
-        client = new OkHttpClient();
-        ucache  =new UserCache(getContext());
-
-
-        fetchUsername();
-
+        btnChooseImg = view.findViewById(R.id.btn_select_img);
+        btnUpload = view.findViewById(R.id.btn_upload);
         btnChooseFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openFileChooser();
+                openFileChooser("audio/*", 1);
             }
         });
-
+        btnChooseImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileChooser("image/*", 0);
+            }
+        });
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (selectedFilePath != null) {
-                    uploadFile(selectedFilePath);
+                if (selectedFilePath != null && selectedFilePathImg != null) {
+                    uploadFile();
                 } else {
                     Toast.makeText(getActivity(), "Vui lòng chọn một file audio", Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                back();
             }
         });
 
         return view;
     }
 
-    private void back() {
-        getParentFragmentManager().popBackStack();
-    }
 
-
-    private void openFileChooser() {
+    private void openFileChooser(String type, int isAudio) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("audio/*");
-        startActivityForResult(intent, FILE_REQUEST_CODE);
+        intent.setType(type);
+        startActivityForResult(intent, isAudio);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == FILE_REQUEST_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri selectedFileUri = data.getData();
-            selectedFilePath = getPathFromUri(selectedFileUri);
+        if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            selectedFilePath = data.getData();
+            String audioFilePath = FileUtils.getPath(this.getContext(), selectedFilePath);
+
+            fileAudio = new File(audioFilePath);
+            System.out.println(selectedFilePath);
+
+        }
+        if (requestCode == 0 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            selectedFilePathImg = data.getData();
+            String audioFilePath = FileUtils.getPath(this.getContext(), selectedFilePathImg);
+            fileImage = new File(audioFilePath);
+            System.out.println(selectedFilePathImg);
+
         }
     }
 
-    private String getPathFromUri(Uri uri) {
-        String filePath = null;
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null && cursor.moveToFirst()) {
-            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            filePath = cursor.getString(columnIndex);
-            cursor.close();
-        }
-        return filePath;
-    }
-
-    private void uploadFile(String filePath) {
-        File file = new File(filePath);
-
-        OkHttpClient client = new OkHttpClient();
-
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("audio/*"), file))
-                .build();
-
-        Request request = new Request.Builder()
-                .url("YOUR_API_URL")
-                .post(requestBody)
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            if (response.isSuccessful()) {
-                String responseData = response.body().string();
-                // Xử lý dữ liệu phản hồi từ API (nếu cần)
-            } else {
-                // Xử lý lỗi (nếu cần)
-                Toast.makeText(getActivity(), "Vui lòng chọn một file audio", Toast.LENGTH_SHORT).show();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private void fetchUsername() {
-        // Tạo request để gửi đến API với access token
-        accessToken = ucache.getToken(getContext());
-        Request request = new Request.Builder()
-                .url("https://backend-clone-zing-mp3.vercel.app/auth/favourite")
-                .addHeader("Authorization", "Bearer "+ accessToken)
-                .build();
-
-        // Thực hiện request bất đồng bộ
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                // Xử lý khi có lỗi xảy ra
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                // Xử lý kết quả trả về từ API
-                if (response.isSuccessful()) {
-                    // Lấy dữ liệu username từ response body
-                    final String username = response.body().string();
-
-                    // Cập nhật UI trong luồng giao diện (main thread)
-                    getActivity().runOnUiThread(new Runnable() {
+    private void uploadFile() {
+        String auth = UserCache.getToken(getContext());
+        if(auth != null && !auth.equals("")){
+            TextView tTitle = (TextView)view.findViewById(R.id.editText_Title);
+           String title =  tTitle.getText().toString();
+            TextView tAstist = (TextView)view.findViewById(R.id.editText_Astris);
+            String atist =  tAstist.getText().toString();
+            System.out.println("----  :" + title + "_"+ atist + "_" + selectedFilePath + "_" + selectedFilePathImg);
+            LoginAPI.uploadFile(fileAudio,fileImage , title, atist, view.getContext(), new CallbackAPI() {
+                @Override
+                public <T> void callback(T data) {
+                    TextView tTitle = (TextView)view.findViewById(R.id.editText_Title);
+                    tTitle.setText("");
+                    TextView tAstist = (TextView)view.findViewById(R.id.editText_Astris);
+                    tAstist.setText("");
+                    fileAudio = null;
+                    fileImage = null;
+                    selectedFilePath = null;
+                    selectedFilePathImg = null;
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            // Gắn dữ liệu username vào TextView
-                            tvUser.setText(username);
+                            Toast.makeText(getActivity(), "Upload successful", Toast.LENGTH_SHORT).show();
                         }
                     });
+
                 }
-            }
-        });
+            });
+        }else{
+           Toast.makeText(getActivity(), "Vui lòng đăng nhập để thực hiện chức năng", Toast.LENGTH_SHORT).show();
+
+        }
+
+
     }
 
 
