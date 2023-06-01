@@ -10,19 +10,21 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project.R;
+import com.example.project.event.EventOpenPlaylist;
 import com.example.project.event.OnClickListener;
+import com.example.project.model.Playlist;
 import com.example.project.model.Subject;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.ViewHolder> {
-    private List<Subject> mData;
-    private OnClickListener onClick;
+    private List<Playlist> mData;
 
+    private EventOpenPlaylist event;
 
-    public void setData(List<Subject> data, OnClickListener o) {
-        this.onClick=o;
+    public void setData(List<Playlist> data, EventOpenPlaylist o) {
+        this.event=o;
         this.mData = data;
     }
 
@@ -37,17 +39,14 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Subject tmp=mData.get(position);
+        Playlist tmp=mData.get(position);
         holder.nameMusic.setText(tmp.getName());
-        holder.nameAstist.setText(tmp.getArtist());
-        System.out.println(holder.linearLayout);
-        Picasso.get().load(tmp.getSrc()).into(holder.avatar);
+        Picasso.get().load(tmp.getImg()).into(holder.avatar);
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println();
-                onClick.clickItem();
+                event.openPlaylist(tmp);
             }
         });
     }
@@ -58,7 +57,7 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nameMusic;
-        public TextView nameAstist;
+        public TextView description;
         public ImageView avatar;
         public LinearLayout linearLayout;
 
@@ -66,7 +65,6 @@ public class AdapterPlaylist extends RecyclerView.Adapter<AdapterPlaylist.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
             nameMusic = itemView.findViewById(R.id.namemusic);
-            nameAstist = itemView.findViewById(R.id.nameAstist);
             avatar = itemView.findViewById(R.id.imgAstist);
             linearLayout = itemView.findViewById(R.id.container_favourites);
         }

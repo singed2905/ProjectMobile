@@ -20,6 +20,9 @@ import android.widget.TextView;
 import com.example.project.R;
 import com.example.project.fragment.HomeFragment;
 import com.example.project.fragment.HistoryFragment;
+import com.example.project.fragment.Lib;
+import com.example.project.fragment.Login;
+import com.example.project.model.Subject;
 import com.example.project.service.ProcessBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -70,13 +73,14 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).addToBackStack(null).commit();
                         System.out.println("Home");
                         return true;
-                    case R.id.search:
-                        return true;
+
                     case R.id.lib:
                         HistoryFragment libFragment = new HistoryFragment();
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, libFragment).addToBackStack(null).commit();
                         return true;
                     case R.id.profile:
+                        Login loginFragment = new Login();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, loginFragment).addToBackStack(null).commit();
                         return true;
                 }
                 return false;

@@ -14,6 +14,10 @@ public class Subject implements Serializable, Parcelable {
     private String id;
     private String url;
 
+
+    public Subject() {
+
+    }
     public Subject(String name, String artist, String src) {
         this.name = name;
         this.artist = artist;

@@ -48,7 +48,6 @@ public class AdapterListSound extends RecyclerView.Adapter<AdapterListSound.Soun
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("CLocksdasd");
                 try {
                     onClick.playSong(tmp, mData,holder.getAdapterPosition());
                 } catch (JSONException e) {
