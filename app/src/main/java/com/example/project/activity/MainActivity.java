@@ -20,16 +20,10 @@ import android.widget.TextView;
 import com.example.project.R;
 import com.example.project.fragment.HomeFragment;
 import com.example.project.fragment.HistoryFragment;
-import com.example.project.fragment.Lib;
 import com.example.project.fragment.Login;
-import com.example.project.model.Subject;
 import com.example.project.service.ProcessBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.json.JSONException;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
