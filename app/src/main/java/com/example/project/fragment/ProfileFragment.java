@@ -224,16 +224,15 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logout() {
-        UserCache.clearToken();
+       ucache.clearToken(getContext());;
 
         // Hiển thị thông báo đăng xuất thành công
         Toast.makeText(getActivity(), "Đăng xuất thành công.", Toast.LENGTH_SHORT).show();
 
-        // Chuyển sang Fragment hoặc Activity khác (ví dụ: Fragment đăng nhập lại)
-        // Ví dụ: Chuyển về Fragment đăng nhập
+        // Chuyển sang Fragment hoặc
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.container_login, new Login());
+        fragmentTransaction.replace(R.id.main_home_fragment, new HomeFragment());
         fragmentTransaction.commit();
     }
 
