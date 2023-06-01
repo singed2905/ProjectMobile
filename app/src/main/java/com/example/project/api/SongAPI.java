@@ -1,5 +1,9 @@
 package com.example.project.api;
 
+import static android.content.ContentValues.TAG;
+
+import android.util.Log;
+
 import com.example.project.cache.CacheObject;
 import com.example.project.event.CallbackAPI;
 import com.example.project.event.OnClickListener;
@@ -31,9 +35,7 @@ import okhttp3.Response;
 public class SongAPI{
     private static OnClickListener o;
     private static ArrayList<Subject> rs = new ArrayList<>();
-
-
-    private static final String API_URL = "https://backend-clone-zing-mp3.vercel.app/api";
+    private static final String API_URL = "http://192.168.1.78:3008/api";
 
     private static final OkHttpClient client = new OkHttpClient().newBuilder()
             .connectTimeout(10, TimeUnit.SECONDS)
@@ -53,6 +55,8 @@ public class SongAPI{
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "Lỗi khi gọi API: " + e.getMessage());
+                System.out.println("Lỗi call api: " + e.getMessage());
                 call.cancel();
             }
 
