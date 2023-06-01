@@ -27,6 +27,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -115,13 +116,13 @@ public class PlaylistFragment extends Fragment {
             }
 
             @Override
-            public void playSong(Subject subject) throws JSONException, IOException {
-                ProcessBar.setURL(subject.getUrl());
+            public void playSong(Subject subject, List<Subject> list, int position) throws JSONException, IOException {
                 Intent intent = new Intent(getActivity(), PlaylistActivity.class);
                 intent.putExtra("id", subject.getId());
                 intent.putExtra("nameAstist", subject.getArtist());
                 intent.putExtra("title", subject.getName());
                 intent.putExtra("img", subject.getSrc());
+                ProcessBar.setURL(getContext(),subject.getUrl(),subject.getId());
                 startActivity(intent);
             }
         });
