@@ -11,6 +11,14 @@
     <LinearLayout
         android:id="@+id/container_profile"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
@@ -46,9 +54,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btn_swap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Upload"
+                android:textSize="30sp"></Button>
 
-            <TextView
 
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_list"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -60,18 +82,37 @@
 
 
 
-            </TextView>
-
+            </Button>
 
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rcv_so"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content" >
+
+
+               </androidx.recyclerview.widget.RecyclerView>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btn_logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Logout"
+                android:textSize="30sp"></Button>
 
 
         </LinearLayout>
 
+    </LinearLayout>
     </LinearLayout>
 
 
