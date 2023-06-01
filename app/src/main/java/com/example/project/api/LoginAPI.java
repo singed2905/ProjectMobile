@@ -146,6 +146,10 @@ public class LoginAPI {
                 String result = response.body().string();
                 System.out.println(result + "huy");
                 callbackAPI.callback(result);
+
+            }
+        });
+    }
     public static void forgotPassword(String username, Context context) {
         RequestBody requestBody = new FormBody.Builder()
                 .add("username", username)
@@ -168,7 +172,6 @@ public class LoginAPI {
             }
         });
     }
-
     public static boolean isJSONValid(String json) {
         try {
             new JSONObject(json);
@@ -182,3 +185,8 @@ public class LoginAPI {
         return true;
     }
 }
+
+
+
+
+
