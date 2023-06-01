@@ -53,6 +53,7 @@ public class UploadFragment extends Fragment {
 
     private Button btnChooseFile;
     private Button btnUpload;
+    private Button btnBack;
     private TextView tvUser;
 
     private String selectedFilePath;
@@ -89,6 +90,7 @@ public class UploadFragment extends Fragment {
 
         btnChooseFile = view.findViewById(R.id.btn_select);
         btnUpload = view.findViewById(R.id.btn_up);
+        btnBack = view.findViewById(R.id.btn_back);
         tvUser = view.findViewById(R.id.tv_username);
         client = new OkHttpClient();
         ucache  =new UserCache(getContext());
@@ -113,10 +115,19 @@ public class UploadFragment extends Fragment {
                 }
             }
         });
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                back();
+            }
+        });
 
         return view;
     }
 
+    private void back() {
+        getParentFragmentManager().popBackStack();
+    }
 
 
     private void openFileChooser() {
