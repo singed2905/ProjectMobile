@@ -39,7 +39,7 @@ import okhttp3.Response;
 public class SongAPI{
     private static OnClickListener o;
     private static ArrayList<Subject> rs = new ArrayList<>();
-    private static final String API_URL = " https://cfa6-113-162-148-232.ngrok-free.app/api";
+    private static final String API_URL = " https://7a24-113-162-148-232.ngrok-free.app/api";
 
     private static final OkHttpClient client = new OkHttpClient().newBuilder()
             .connectTimeout(10, TimeUnit.SECONDS)
