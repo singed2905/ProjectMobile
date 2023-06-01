@@ -35,4 +35,9 @@ public class UserCache {
         String username = sharedPreferences.getString("username", "");
         return username;
     }
+
+    public static String clearToken(Context context)
+    {
+        return null;
+    }
 }
