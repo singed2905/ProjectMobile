@@ -59,13 +59,20 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="387dp"
-            android:layout_height="200dp"
-            android:layout_marginBottom="20dp"
-            android:src="@drawable/keshi" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/parent_layout"
+            android:layout_width="230dp"
+            android:layout_height="230dp"
+            app:cardCornerRadius="230dp">
 
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animation="@anim/rotate_animation"
+                android:scaleType="fitXY"
+                android:src="@drawable/keshi" />
+        </androidx.cardview.widget.CardView>
         <TextView
             android:id="@+id/name"
             android:layout_width="match_parent"
@@ -90,7 +97,7 @@
 
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
             android:orientation="horizontal"
             android:weightSum="3">
@@ -113,8 +120,9 @@
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
                 android:max="100"
-                android:progressTint="@color/white"
-                android:progress="0" />
+                android:progress="0"
+                android:progressTint="@color/white" />
+
             <TextView
                 android:id="@+id/time_end"
                 android:layout_width="61dp"
@@ -199,7 +207,7 @@
                 app:fabCustomSize="40dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/next1"
+                android:id="@+id/random"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

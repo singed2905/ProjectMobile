@@ -8,27 +8,35 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.project.api.SongAPI;
+import com.example.project.cache.SongCache;
 import com.example.project.event.OnClickListener;
 import com.example.project.R;
 import com.example.project.activity.PlaylistActivity;
-import com.example.project.adapter.AdapterFavourites;
+import com.example.project.adapter.AdapterHistory;
 import com.example.project.adapter.AdapterRecently;
 import com.example.project.model.Subject;
+import com.example.project.service.ProcessBar;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link Lib#} factory method to
+ * Use the {@link HistoryFragment#} factory method to
  * create an instance of this fragment.
  */
-public class Lib extends Fragment implements OnClickListener {
+public class HistoryFragment extends Fragment implements OnClickListener {
 
     RecyclerView homeRecycler;
     RecyclerView homeFavourites;
@@ -36,20 +44,24 @@ public class Lib extends Fragment implements OnClickListener {
     List<Subject> listMusic;
     View view;
 
-    public Lib() {
+    public HistoryFragment() {
         // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_lib, container, false);
-        this.init();
+        view = inflater.inflate(R.layout.fragment_history, container, false);
+        try {
+            this.init();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         this.setAdapterRecently();
-        this.setAdapterFavourites();
+        this.setAdapterHistory();
         return view;
     }
-    public void init() {
+    public void init() throws JSONException {
         homeRecycler = view.findViewById(R.id.homeRecycler);
         homeFavourites = view.findViewById(R.id.homeFavourites);
         listMusic = new ArrayList<>();
@@ -61,32 +73,33 @@ public class Lib extends Fragment implements OnClickListener {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         homeRecycler.setLayoutManager(layoutManager);
         AdapterRecently adapterRecently = new AdapterRecently();
-        adapterRecently.setData(listMusic,this);
+        List<Subject> list= listMusic.subList( 0,  7);
+        adapterRecently.setData(list,this);
         homeRecycler.setAdapter(adapterRecently);
     }
-    public void setAdapterFavourites() {
+    public void setAdapterHistory() {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         homeFavourites.setLayoutManager(gridLayoutManager);
-        AdapterFavourites adapterFavourites = new AdapterFavourites();
+        AdapterHistory adapterFavourites = new AdapterHistory();
         adapterFavourites.setData(listMusic,this);
         homeFavourites.setAdapter(adapterFavourites);
     }
 
-    public void initListMusic() {
-        //get list
-        this.listMusic.add(new Subject("Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU"));
-        this.listMusic.add(new Subject("Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU"));
-        this.listMusic.add(new Subject("Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU"));
-        this.listMusic.add(new Subject("Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU"));
-        this.listMusic.add(new Subject("Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU"));
-        this.listMusic.add(new Subject("Heartiess", "The Weekend", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRey6EOaGZO6WpC8zMYWKqbSII6V3hSUTrSdQ&usqp=CAU"));
-
+    public void initListMusic() throws JSONException {
+        JSONArray data= SongCache.getAllMusic(getContext());
+        for (int i = 0; i <data.length(); i++) {
+            try {
+                String tmp = data.getString(i);
+                Subject song= SongAPI.getInfoSong(tmp);
+                listMusic.add(song);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
     @Override
     public void clickItem() {
-        Intent intent = new Intent(getActivity(), PlaylistActivity.class);
-        startActivity(intent);
-        Toast.makeText(this.getContext(), "clickITem", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
@@ -94,10 +107,19 @@ public class Lib extends Fragment implements OnClickListener {
 
     }
 
-
-
     @Override
-    public void playSong(Subject id) {
-
+    public void playSong(Subject tmp, List<Subject> listSubject,int position) throws JSONException {
+        Intent intent = new Intent(getActivity(), PlaylistActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("subjectList", (ArrayList<? extends Parcelable>) listSubject);
+        bundle.putString("nameAstist", tmp.getArtist());
+        bundle.putString("title", tmp.getName());
+        bundle.putString("img", tmp.getSrc());
+        bundle.putString("url", tmp.getUrl());
+        bundle.putInt("position", position);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        ProcessBar.setURL(getContext(), tmp.getUrl(),tmp.getId());
+        Toast.makeText(this.getContext(), "clickITem", Toast.LENGTH_SHORT).show();
     }
 }
