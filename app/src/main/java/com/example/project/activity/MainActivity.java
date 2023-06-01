@@ -18,6 +18,7 @@ import com.example.project.adapter.AdapterFavourites;
 import com.example.project.adapter.AdapterRecently;
 import com.example.project.fragment.HomeFragment;
 import com.example.project.fragment.Lib;
+import com.example.project.fragment.Login;
 import com.example.project.model.Subject;
 import com.example.project.service.ProcessBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, libFragment).addToBackStack(null).commit();
                         return true;
                     case R.id.profile:
+                        Login loginFragment = new Login();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, loginFragment).addToBackStack(null).commit();
                         return true;
                 }
                 return false;

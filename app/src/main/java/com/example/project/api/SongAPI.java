@@ -5,14 +5,18 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.project.R;
+import com.example.project.activity.MainActivity;
 import com.example.project.adapter.BannerAdapter;
 import com.example.project.event.InitHomeContent;
 import com.example.project.event.OnClickListener;
 import com.example.project.event.SetURLStream;
+import com.example.project.fragment.Login;
 import com.example.project.model.Subject;
 
 import org.json.JSONArray;
