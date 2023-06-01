@@ -380,6 +380,7 @@ public class PlaylistActivity extends AppCompatActivity {
             ProcessBar.setURL(getApplicationContext(), subject.getUrl(), subject.getId());
 
         }
+        ProcessBar.check=false;
         this.range=0;
         imgView.setRotation(0);
     }
