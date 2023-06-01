@@ -77,13 +77,12 @@ public class HomeFragment extends Fragment implements OnClickListener {
         }
 
     }
-    private void init(){
+    private void init() throws IOException {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         ContentHomeFragment contentHomeFragment = new ContentHomeFragment();
         Bundle args = new Bundle();
         LoadingFragment loadingFragment = new LoadingFragment();
         fragmentManager.beginTransaction().replace(R.id.main_home_fragment, loadingFragment).addToBackStack(null).commit();
-
         SongAPI.getHome(new CallbackAPI() {
             @Override
             public <T> void callback(T rs) {
@@ -100,7 +99,12 @@ public class HomeFragment extends Fragment implements OnClickListener {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
         search();
-        init();
+        try {
+            init();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
         return view;
 
@@ -120,6 +124,7 @@ public class HomeFragment extends Fragment implements OnClickListener {
                     InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
+
                 FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
                 LoadingFragment loadingFragment = new LoadingFragment();
                 fragmentManager.beginTransaction().replace(R.id.main_home_fragment, loadingFragment).addToBackStack(null).commit();
