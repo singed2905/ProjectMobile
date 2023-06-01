@@ -35,4 +35,15 @@ public class UserCache {
         String username = sharedPreferences.getString("username", "");
         return username;
     }
+    public static void saveNotifyForgot(Context context, String notify) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("forgot", context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("notify", notify);
+        editor.apply();
+    }
+    public static String getNotifyForgot(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("forgot", context.MODE_PRIVATE);
+        String notify = sharedPreferences.getString("notify", "");
+        return notify;
+    }
 }
