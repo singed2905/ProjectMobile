@@ -49,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).addToBackStack(null).commit();
                         System.out.println("Home");
                         return true;
-                    case R.id.search:
-                        return true;
+
                     case R.id.lib:
                         Lib libFragment = new Lib();
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, libFragment).addToBackStack(null).commit();

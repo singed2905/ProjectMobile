@@ -2,9 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-
+    android:id="@+id/main_home"
     android:layout_height="match_parent"
     tools:context=".fragment.SearchFragment"
+    android:paddingTop="20dp"
+
     android:orientation="vertical">
 
     <ScrollView

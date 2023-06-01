@@ -42,7 +42,15 @@ public class  ProcessBar extends Service {
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(url));
-            mediaPlayer.prepare();
+
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mediaPlayer.prepareAsync();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
