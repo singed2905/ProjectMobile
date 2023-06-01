@@ -73,8 +73,7 @@ public class HistoryFragment extends Fragment implements OnClickListener {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         homeRecycler.setLayoutManager(layoutManager);
         AdapterRecently adapterRecently = new AdapterRecently();
-        List<Subject> list= listMusic.subList( 0,  7);
-        adapterRecently.setData(list,this);
+        adapterRecently.setData(listMusic,this);
         homeRecycler.setAdapter(adapterRecently);
     }
     public void setAdapterHistory() {
