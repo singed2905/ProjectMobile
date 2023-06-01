@@ -24,6 +24,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -155,13 +156,12 @@ public class HomeFragment extends Fragment implements OnClickListener {
         Bundle args = new Bundle();
         args.putSerializable("subjects", arr);
         searchFragment.setArguments(args);
-
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.main_home_fragment, searchFragment).addToBackStack(null).commit();
     }
 
     @Override
-    public void playSong(Subject id) {
+    public void playSong(Subject id, List<Subject> list,int position) {
 
     }
 }

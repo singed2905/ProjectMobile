@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -146,13 +148,16 @@ public class ContentHomeFragment extends Fragment implements EventOpenPlaylist{
             }
 
             @Override
-            public void playSong(Subject subject) throws JSONException, IOException {
-                ProcessBar.setURL(subject.getUrl());
+            public void playSong(Subject subject, List<Subject> list, int position) throws JSONException, IOException {
                 Intent intent = new Intent(getActivity(), PlaylistActivity.class);
                 intent.putExtra("id", subject.getId());
                 intent.putExtra("nameAstist", subject.getArtist());
                 intent.putExtra("title", subject.getName());
                 intent.putExtra("img", subject.getSrc());
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("subjectList", (ArrayList<? extends Parcelable>) list);
+                intent.putExtras(bundle);
+                ProcessBar.setURL(getContext(),subject.getUrl(),subject.getId());
                 startActivity(intent);
             }
         });
