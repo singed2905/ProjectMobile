@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,6 +123,9 @@ public class PlaylistFragment extends Fragment {
                 intent.putExtra("nameAstist", subject.getArtist());
                 intent.putExtra("title", subject.getName());
                 intent.putExtra("img", subject.getSrc());
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("subjectList", (ArrayList<? extends Parcelable>) list);
+                intent.putExtras(bundle);
                 ProcessBar.setURL(getContext(),subject.getUrl(),subject.getId());
                 startActivity(intent);
             }
