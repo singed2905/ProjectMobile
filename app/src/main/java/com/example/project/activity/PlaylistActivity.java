@@ -5,6 +5,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
+import android.animation.ObjectAnimator;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Matrix;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,9 +18,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -22,9 +33,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.project.R;
+import com.example.project.cache.SongCache;
+import com.example.project.model.Subject;
 import com.example.project.service.ProcessBar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class PlaylistActivity extends AppCompatActivity {
@@ -36,13 +54,25 @@ public class PlaylistActivity extends AppCompatActivity {
     private static final String ACTION_PAUSE = "ACTION_PAUSE";
     private FloatingActionButton btn_back;
     private FloatingActionButton btnPlay;
-    private FloatingActionButton btnPause;
+    private FloatingActionButton btnPrevious;
     private FloatingActionButton btnReplay;
-    private Intent serviceIntent;
+    private FloatingActionButton btnRandom;
+    private FloatingActionButton btnNext;
+    public static Intent serviceIntent;
     private SeekBar processBar;
     private TextView endTime;
+    private TextView nameAstist;
+    private TextView titleSong;
+    private TextView titleTopSong;
+    private ImageView imgView;
     private TextView runTime;
-    boolean check = false;
+    private String idSong;
+    private ArrayList<Subject> subjectList;
+    private int position = 0;
+    private Subject subject;
+
+    private boolean isRandom = false;
+    private int range = 0;
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -51,7 +81,21 @@ public class PlaylistActivity extends AppCompatActivity {
                 int currentPositionMs = (int) intent.getFloatExtra("CURRENT_POSITION_MS", 0);
                 int currentPositionEndTime = (int) intent.getFloatExtra("CURRENT_POSITION_ENDTIME", 0);
                 if (currentPositionMs == currentPositionEndTime) {
-                    stopService(serviceIntent);
+                    if (!isRandom) {
+                        try {
+                            changeSong(1);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        try {
+                            changeSong(2);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+
                 } else {
                     processBar.setProgress((int) (currentPositionPercent * processBar.getMax()));
                     runTime.setText(setTime(currentPositionMs));
@@ -59,18 +103,30 @@ public class PlaylistActivity extends AppCompatActivity {
                 }
             } else {
                 if (intent.getAction().equals(ACTION_PLAY)) {
-                    Intent serviceIntent = new Intent(context, ProcessBar.class);
+                    if (!ProcessBar.check) {
+                        ProcessBar.check = true;
+                        btnPlay.setImageResource(R.drawable.baseline_pause_24);
+                    } else {
+                        ProcessBar.check = false;
+                        btnPlay.setImageResource(R.drawable.baseline_play_arrow_24);
+                    }
+                    serviceIntent = new Intent(context, ProcessBar.class);
                     context.startService(serviceIntent);
                 } else {
+                        ProcessBar.check = true;
+                        btnPlay.setImageResource(R.drawable.baseline_pause_24);
                     if (intent.getAction().equals(ACTION_PAUSE)) {
-                        Intent stopServiceIntent = new Intent(context, ProcessBar.class);
-                        context.stopService(stopServiceIntent);
+                        serviceIntent = new Intent(context, ProcessBar.class);
+                        context.stopService(serviceIntent);
                     }
                 }
 
             }
+            rotateImg();
         }
     };
+
+
     private void createNotification() {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -95,13 +151,33 @@ public class PlaylistActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
-        this.init();
+        serviceIntent = new Intent(this, ProcessBar.class);
+        stopService(serviceIntent);
+        try {
+            this.init();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         this.setImgProcessBar();
         this.addEventBtnBack();
         this.addEventPlay();
         this.addEventReplay();
         this.addEventSeekBar();
         this.registerBroadcastReceiver();
+        this.addEventNextSong();
+        this.addEventPrevious();
+        this.addEventRandomSong();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ProcessBar.check) {
+            btnPlay.setImageResource(R.drawable.baseline_pause_24);
+        } else {
+            btnPlay.setImageResource(R.drawable.baseline_play_arrow_24);
+        }
     }
 
     public void registerBroadcastReceiver() {
@@ -111,6 +187,7 @@ public class PlaylistActivity extends AppCompatActivity {
         filter.addAction(ACTION_PAUSE);
         registerReceiver(broadcastReceiver, filter);
     }
+
     private void addEventSeekBar() {
         processBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -131,31 +208,40 @@ public class PlaylistActivity extends AppCompatActivity {
         });
     }
 
+    public void rotateImg() {
+        this.range += 1;
+        imgView.setRotation(this.range);
+    }
+
     public void addEventBtnBack() {
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                Intent intent = new Intent(PlaylistActivity.this, MainActivity.class);
+                intent.putExtra("artist", subject.getArtist());
+                intent.putExtra("name", subject.getName());
+                startActivity(intent);
             }
         });
     }
+
 
     public void addEventPlay() {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!check) {
+                if (!ProcessBar.check) {
+                    ProcessBar.check = true;
                     btnPlay.setImageResource(R.drawable.baseline_pause_24);
-                    check = true;
                 } else {
+                    ProcessBar.check = false;
                     btnPlay.setImageResource(R.drawable.baseline_play_arrow_24);
-                    check = false;
                 }
                 if (notificationManager == null) {
                     createNotification();
                 }
-                serviceIntent = new Intent(getApplicationContext(), ProcessBar.class);
                 startService(serviceIntent);
+
             }
         });
     }
@@ -169,6 +255,7 @@ public class PlaylistActivity extends AppCompatActivity {
                     getApplicationContext().stopService(serviceIntent);
                     serviceIntent = new Intent(getApplicationContext(), ProcessBar.class);
                     startService(serviceIntent);
+
                 }
             }
         });
@@ -184,16 +271,120 @@ public class PlaylistActivity extends AppCompatActivity {
         return time;
     }
 
-    public void init() {
+    public void init() throws JSONException {
+        imgView = findViewById(R.id.imageView);
         btn_back = this.findViewById(R.id.fab);
         btnPlay = findViewById(R.id.play);
-        btnPause = findViewById(R.id.previous);
+        btnPrevious = findViewById(R.id.previous);
         processBar = findViewById(R.id.seek_bar);
         runTime = findViewById(R.id.run_time);
         endTime = findViewById(R.id.time_end);
         btnReplay = findViewById(R.id.replay);
+        nameAstist = findViewById(R.id.nameAstist);
+        titleSong = findViewById(R.id.name);
+        titleTopSong = findViewById(R.id.textView2);
+        btnNext = findViewById(R.id.next);
+        btnRandom = findViewById(R.id.random);
+        Bundle extras = getIntent().getExtras();
+        subjectList = extras.getParcelableArrayList("subjectList");
+        if (extras != null) {
+            subject = new Subject(extras.getString("id"), extras.getString("title"), extras.getString("nameAstist"), extras.getString("img"), extras.getString("url"));
+            setDisplay(subject, extras.getInt("position"), false);
+        }
+    }
+
+    private void changeSong(int type) throws JSONException {
+        stopService(serviceIntent);
+        serviceIntent = new Intent(getApplicationContext(), ProcessBar.class);
+        if (type == 1) {
+            if (position + 1 < subjectList.size()) {
+                subject = subjectList.get(position + 1);
+                position = position + 1;
+                setDisplay(subject, position,true);
+            }
+        } else {
+            if (type == 0) {
+
+                if (position - 1 >= 0) {
+                    subject = subjectList.get(position - 1);
+                    position = position - 1;
+                    setDisplay(subject, position,true);
+                }
+            } else {
+                Random random = new Random();
+                int randomNumber = random.nextInt(subjectList.size() - 1 - 2 + 1) + 2;
+                subject = subjectList.get(randomNumber);
+                position = randomNumber;
+                setDisplay(subject, position,true);
+            }
+
+        }
+        startService(serviceIntent);
+    }
+
+    public void addEventNextSong() {
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    changeSong(1);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
     }
+
+    public void addEventPrevious() {
+        btnPrevious.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    changeSong(0);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+    }
+
+    public void addEventRandomSong() {
+        btnRandom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isRandom = !isRandom;
+                Drawable drawable = btnRandom.getDrawable();
+                if (isRandom) {
+                    btnRandom.setBackgroundTintList(ColorStateList.valueOf(Color.YELLOW));
+                    drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+                } else {
+                    btnRandom.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+                    drawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+
+                }
+            }
+        });
+
+    }
+
+    public void setDisplay(Subject subject, int positio1n, boolean isSetUrl) throws JSONException {
+        idSong = subject.getId();
+        nameAstist.setText(subject.getArtist());
+        titleTopSong.setText(subject.getName());
+        titleSong.setText(subject.getName());
+        position = positio1n;
+        Picasso.get().load(subject.getSrc()).into(imgView);
+        if (isSetUrl) {
+            ProcessBar.setURL(getApplicationContext(), subject.getUrl(), subject.getId());
+
+        }
+        ProcessBar.check=false;
+        this.range=0;
+        imgView.setRotation(0);
+    }
+
 
     public void setImgProcessBar() {
         Glide.with(this)

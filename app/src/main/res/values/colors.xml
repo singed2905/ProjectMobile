@@ -12,4 +12,6 @@
     <color name="text">#fff</color>
     <color name="active">#fff</color>
     <color name="no_active">#C5C4C4</color>
+    <color name="light_blue">#FFC3E7ED</color>
+    <color name="notify">#16BF1D</color>
 </resources>

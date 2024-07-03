@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.Register">
+
+    <LinearLayout
+        android:id="@+id/container_register"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Upload"
+            android:textColor="@color/active"
+            android:textSize="40dp" />
+
+        <Button
+            android:id="@+id/btn_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+
+            android:text="Select audio">
+        </Button>
+
+        <Button
+            android:id="@+id/btn_select_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="Select image">
+        </Button>
+
+        <EditText
+            android:id="@+id/editText_Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="Tên bài hát"
+            android:padding="15dp"
+            android:background="@drawable/custom_edittext"
+            android:layout_marginBottom="20dp"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/baseline_library_music_24"
+            android:textColor="@color/backgr" />
+        <EditText
+            android:id="@+id/editText_Astris"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:ems="10"
+            android:hint="Nghệ sĩ"
+            android:padding="15dp"
+            android:inputType="text"
+            android:background="@drawable/custom_edittext"
+            android:drawablePadding="8dp"
+            android:drawableLeft="@drawable/baseline_profile_24"
+            android:textColor="@color/backgr" />
+
+
+
+        <Button
+            android:id="@+id/btn_upload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="Upload" />
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

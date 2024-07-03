@@ -5,21 +5,39 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
 import com.example.project.R;
+import com.example.project.cache.SongCache;
+import com.example.project.model.Playlist;
+import com.example.project.model.Subject;
+
+import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ProcessBar extends Service {
+public class  ProcessBar extends Service {
     MediaPlayer mediaPlayer;
     public static final String ACTION_CHANGE_PROGRESS="ACTION_CHANGE_PROGRESS";
+    private static final String SHARED_PREFS_KEY = "MyPreferences";
+    private static final String CHECK_VALUE_KEY = "checkValue";
     private static Handler handler;
+    public static String url = "";
+    public static boolean check=false;
 
+    public static void setURL(Context context, String linkStream,String id) throws JSONException {
+        SongCache.addMusic(context, id);
+        url = linkStream;
+    }
     public ProcessBar() {
     }
 
@@ -33,8 +51,10 @@ public class ProcessBar extends Service {
     public void onCreate() {
         super.onCreate();
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            mediaPlayer.setDataSource("https://vnso-zn-16-tf-mp3-s1-zmp3.zmdcdn.me/07c2b89b7adb9385caca/8837313368341434685?authen=exp=1684573669~acl=/07c2b89b7adb9385caca/*~hmac=88533e22b57dc159b923fd387434040d&fs=MTY4NDQwMDg2OTmUsIC4NHx3ZWJWNnwwfDE0LjE2OS41MS45Nw");
+            mediaPlayer.setDataSource(getApplicationContext(), Uri.parse(url));
+
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -42,10 +62,11 @@ public class ProcessBar extends Service {
                 }
             });
             mediaPlayer.prepareAsync();
+
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to prepare media player");
+            throw new RuntimeException(e);
         }
+
         this.createHandle();
         this.registerBroadcastReceiver();
 
@@ -60,7 +81,10 @@ public class ProcessBar extends Service {
 
     private void createHandle() {
         handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.postDelayed(createRunnable(), 1000);
+    }
+    public Runnable createRunnable(){
+        return new Runnable() {
             @Override
             public void run() {
                 Intent broadcastIntent = new Intent();
@@ -71,7 +95,7 @@ public class ProcessBar extends Service {
                 sendBroadcast(broadcastIntent);
                 handler.postDelayed(this, 1000);
             }
-        }, 1000);
+        };
     }
 
     private BroadcastReceiver seekBarReceiver = new BroadcastReceiver() {
@@ -94,8 +118,10 @@ public class ProcessBar extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (mediaPlayer.isPlaying()) {
+            handler.removeCallbacksAndMessages(null);
             mediaPlayer.pause();
         } else {
+            handler.post(createRunnable());
             mediaPlayer.start();
         }
         return super.onStartCommand(intent, flags, startId);

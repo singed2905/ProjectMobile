@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/angryimg"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.Login">
+
+        <LinearLayout
+            android:id="@+id/container_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="80dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            tools:ignore="MissingConstraints">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:text="Đăng Nhập"
+                android:textStyle="bold"
+                android:textSize="40dp"/>
+
+            <EditText
+                android:id="@+id/editTextText_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:ems="10"
+                android:hint="Username"
+                android:padding="15dp"
+                android:inputType="text"
+                android:background="@drawable/custom_edittext"
+                android:drawablePadding="8dp"
+                android:drawableLeft="@drawable/baseline_profile_24"
+                android:textColor="@color/backgr" />
+
+            <EditText
+                android:id="@+id/editTextTextPassword_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="15dp"
+                android:background="@drawable/custom_edittext"
+                android:drawablePadding="8dp"
+                android:drawableLeft="@drawable/baseline_lock_24"
+                android:textColor="@color/backgr" />
+
+            <Button
+                android:id="@+id/Sign_In"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/custom_edittext"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginLeft="32dp"
+                android:backgroundTint="@color/light_blue"
+                android:text="Đăng Nhập"
+                android:textSize="20dp"/>
+            <TextView
+                android:id="@+id/go_to_forgot_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Quên Mật khẩu?"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/container_goToSignup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="50dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Don't have an account?"
+                android:textSize="15dp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/go_to_sign_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign Up"
+                android:textColor="@color/purple_500"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:layout_marginLeft="10dp"
+                />
+        </LinearLayout>
+
+
+<!--    </LinearLayout>-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
